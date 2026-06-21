@@ -1,0 +1,607 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Light theme surfaces — warm cream base */
+  --bg: #faf8f5;
+  --bg-grad: linear-gradient(180deg, #fdfcfa 0%, #f5f2ed 100%);
+  --surface: #fffefa;
+  --text: #1a1a2a;
+  --text-dim: #6b6b7a;
+  --text-muted: #a6a6b0;
+  --border: rgba(26, 26, 42, 0.08);
+  --shadow-soft: 0 10px 40px rgba(26, 26, 42, 0.08);
+  --shadow-card: 0 4px 18px rgba(26, 26, 42, 0.06);
+
+  /* Category accents — soft pastel palette */
+  --beat: #e07070;
+  --bass: #6ba3b5;
+  --perc: #e08a6a;
+  --vocal: #5db8a8;
+  --toy: #5db8a8;
+  --hihat: #e8b86d;
+  --fx: #a07ed4;
+  --guitar: #e5a04a;
+
+  /* Glow variants */
+  --beat-glow: rgba(224, 112, 112, 0.35);
+  --bass-glow: rgba(107, 163, 181, 0.35);
+  --perc-glow: rgba(224, 138, 106, 0.35);
+  --vocal-glow: rgba(93, 184, 168, 0.35);
+  --toy-glow: rgba(93, 184, 168, 0.35);
+
+  /* Brand gradient */
+  --brand-grad: linear-gradient(135deg, var(--beat) 0%, var(--bass) 100%);
+  --brand-grad-playing: linear-gradient(135deg, var(--beat) 0%, var(--perc) 100%);
+}
+
+[data-theme="dark"] {
+  --bg: #121218;
+  --bg-grad: linear-gradient(180deg, #1a1a28 0%, #151520 100%);
+  --surface: #1c1c2a;
+  --text: #ebe8f0;
+  --text-dim: #9494a8;
+  --text-muted: #5c5c70;
+  --border: rgba(255, 255, 255, 0.07);
+  --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+body {
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* Background EQ canvas replaces the old gradient wash */
+
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 24px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 100vh;
+}
+
+/* ─── Header ─── */
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px 4px 12px;
+}
+
+.header-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.header-center {
+  flex: 0 0 auto;
+}
+
+.wordmark {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  background: var(--brand-grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  overflow: visible;
+}
+
+/* Play / stop button */
+.play-btn {
+  width: 72px;
+  height: 72px;
+  border: none;
+  border-radius: 50%;
+  background: var(--brand-grad);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(224, 112, 112, 0.3);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.play-btn svg {
+  fill: currentColor;
+}
+
+.play-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 10px 32px rgba(224, 112, 112, 0.4);
+}
+
+.play-btn:active {
+  transform: scale(0.94);
+}
+
+.play-btn.playing {
+  background: var(--brand-grad-playing);
+  box-shadow: 0 8px 24px var(--beat-glow);
+}
+
+/* Header action buttons (clear, download) */
+.header-action {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.header-action:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+.header-action:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Theme toggle */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-card);
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(224, 112, 112, 0.2);
+}
+
+.theme-toggle:active {
+  transform: scale(0.92);
+}
+
+/* ─── Stage ─── */
+.stage {
+  background: var(--bg-grad);
+  border-radius: 28px;
+  padding: 40px 28px 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  transition: box-shadow 0.6s ease;
+}
+
+[data-theme="dark"] .stage {
+  background: linear-gradient(180deg, rgba(26, 26, 40, 0.85) 0%, rgba(21, 21, 32, 0.9) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Soft floor shadow under the dads */
+.stage::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 110px;
+  background: linear-gradient(0deg, rgba(26, 26, 42, 0.12) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+[data-theme="dark"] .stage::after {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
+}
+
+/* Faint top spotlight */
+.stage::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 220px;
+  background: radial-gradient(ellipse, rgba(107, 163, 181, 0.14) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+[data-theme="dark"] .stage::before {
+  background: radial-gradient(ellipse, rgba(230, 57, 70, 0.12) 0%, transparent 60%);
+  width: 700px;
+  height: 250px;
+}
+
+/* Stage playing glow */
+.stage.stage-playing {
+  box-shadow: var(--shadow-soft), 0 0 80px rgba(224, 112, 112, 0.1), 0 0 140px rgba(107, 163, 181, 0.08);
+}
+
+[data-theme="dark"] .stage.stage-playing {
+  box-shadow: var(--shadow-soft), 0 0 100px rgba(224, 112, 112, 0.18), 0 0 160px rgba(107, 163, 181, 0.14);
+}
+
+.stage.stage-playing::before {
+  width: 800px;
+  height: 280px;
+  background: radial-gradient(ellipse, rgba(224, 112, 112, 0.15) 0%, transparent 60%);
+  animation: spotlightPulse 3s ease-in-out infinite;
+}
+
+@keyframes spotlightPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.stage-hint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  animation: hintPulse 2.5s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+
+
+.stage-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Character Slot ─── */
+.char-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 0;
+  max-width: 160px;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.char-slot-over {
+  transform: translateY(-10px);
+}
+
+.char-slot-over .char-svg-wrap {
+  filter: drop-shadow(0 8px 16px rgba(107, 163, 181, 0.3));
+}
+
+.char-muted {
+  opacity: 0.4;
+}
+
+.char-muted:hover {
+  opacity: 0.6;
+}
+
+.char-svg-wrap {
+  width: 100%;
+  transition: filter 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.dad-avatar svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.dad-empty {
+  filter: grayscale(1) opacity(0.45);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.dad-assigned {
+  filter: none;
+  transition: filter 0.3s ease, transform 0.3s ease;
+  animation: assignPop 0.35s ease-out;
+}
+
+@keyframes assignPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* ─── Character Animations ─── */
+.dad-active {
+  animation: dadBounce 0.6s ease-in-out infinite;
+}
+
+@keyframes dadBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(-1.5deg); }
+  50% { transform: translateY(-7px) rotate(0deg); }
+  75% { transform: translateY(-5px) rotate(1.5deg); }
+}
+
+@keyframes badgeSlideIn {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Loop badge */
+.char-loop-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Nunito', sans-serif;
+  animation: badgeSlideIn 0.3s ease-out;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fff;
+  padding: 4px 6px 4px 9px;
+  border-radius: 14px;
+  white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(26, 26, 46, 0.15);
+}
+
+.char-loop-name {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.char-loop-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.char-loop-remove:hover {
+  background: rgba(255, 255, 255, 0.45);
+  transform: scale(1.15);
+}
+
+/* Controls */
+.char-controls {
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.char-slot:hover .char-controls,
+.char-slot.has-loop .char-controls {
+  opacity: 1;
+}
+
+.char-ctrl {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-card);
+}
+
+.char-ctrl:hover {
+  color: var(--text-dim);
+  transform: translateY(-1px);
+}
+
+.char-ctrl.active {
+  background: var(--beat);
+  border-color: var(--beat);
+  color: #fff;
+  box-shadow: 0 0 0 4px var(--beat-glow);
+}
+
+.char-ctrl.solo.active {
+  background: var(--perc);
+  border-color: var(--perc);
+  color: #fff;
+  box-shadow: 0 0 0 4px var(--perc-glow);
+}
+
+/* ─── Sound Palette ─── */
+/* ─── Sound Palette ─── */
+.sound-palette {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 16px 20px;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  box-shadow: var(--shadow-card);
+}
+
+[data-theme="dark"] .sound-palette {
+  background: rgba(28, 28, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.palette-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.palette-group-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.palette-group-chips {
+  display: flex;
+  gap: 4px;
+
+}
+
+/* Clean matte tiles */
+.palette-chip {
+  width: 52px;
+  border-radius: 14px;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 4px 7px;
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+  user-select: none;
+  touch-action: none;
+  border: none;
+  position: relative;
+}
+
+.palette-chip:hover {
+  transform: translateY(-5px) scale(1.06);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.palette-chip:active {
+  cursor: grabbing;
+  transform: scale(0.94);
+}
+
+.palette-chip-name {
+  display: block;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ─── Drag Overlay ─── */
+.drag-overlay-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  transform: scale(1.15) rotate(-3deg);
+  pointer-events: none;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(26, 26, 46, 0.14);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 26, 46, 0.24);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.credit-line {
+  text-align: center;
+  padding: 12px 0 8px;
+  font-size: 0.7rem;
+  color: #666;
+  letter-spacing: 0.5px;
+}
+
+.credit-line a {
+  color: #888;
+  text-decoration: none;
+}
+
+.credit-line a:hover {
+  color: #aaa;
+  text-decoration: underline;
+}
