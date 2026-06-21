@@ -706,13 +706,22 @@ body {
   }
 
   .header-center {
-    order: -1;
+    order: 0;
     flex: 0 0 100%;
     display: flex;
     justify-content: center;
   }
 
+  .header-left {
+    order: -2;
+    flex: 0 0 100%;
+    justify-content: center;
+  }
+
   .header-right {
+    order: -1;
+    flex: 0 0 100%;
+    justify-content: center;
     gap: 8px;
   }
 
@@ -757,7 +766,7 @@ body {
 
   .sound-palette {
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 16px;
     padding: 12px;
     border-radius: 16px;
     overflow-x: visible;
@@ -765,12 +774,16 @@ body {
   }
 
   .palette-chip {
-    width: 44px;
+    width: 48px;
     padding: 8px 3px 5px;
   }
 
   .palette-chip-name {
     font-size: 0.55rem;
+  }
+
+  .palette-group-chips {
+    gap: 8px;
   }
 
   .stage-hint {
