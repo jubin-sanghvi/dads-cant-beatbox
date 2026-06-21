@@ -99,6 +99,9 @@ function MainApp() {
         <div className="credit-line">
           Beats by <a href="https://romogroove.com" target="_blank" rel="noopener noreferrer">Romo Groove</a>
         </div>
+        <footer className="site-footer">
+          Made on Father's Day for a 4-month-old who thinks his dad can beatbox. He can't. But the kid laughs anyway.
+        </footer>
       </div>
       {autoStopped && (
         <div style={{

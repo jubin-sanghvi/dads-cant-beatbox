@@ -24,7 +24,13 @@ export default function CursorParticles() {
   const rafRef = useRef<number>(0)
   const lastSpawnRef = useRef<number>(0)
 
+  // ponytail: skip on touch devices and reduced-motion — no cursor to follow, saves GPU
+  const skip = typeof window !== 'undefined'
+    && (window.matchMedia('(hover: none)').matches
+      || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+
   useEffect(() => {
+    if (skip) return
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
@@ -108,7 +114,9 @@ export default function CursorParticles() {
       window.removeEventListener('mousemove', handleMouseMove)
       cancelAnimationFrame(rafRef.current)
     }
-  }, [])
+  }, [skip])
+
+  if (skip) return null
 
   return (
     <canvas

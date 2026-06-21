@@ -19,7 +19,7 @@ interface Store {
   autoStopped: boolean
   play: () => void
   stop: () => void
-  assignLoop: (charId: number, loopId: string) => void
+  assignLoop: (charId: number, loopId: string) => Promise<void>
   clearLoop: (charId: number) => void
   clearAll: () => void
   toggleMute: (charId: number) => void
@@ -30,7 +30,7 @@ interface Store {
   downloadMix: () => Promise<void>
   dismissAutoStop: () => void
   getShareString: () => string
-  applyShareState: (encoded: string) => void
+  applyShareState: (encoded: string) => Promise<void>
 }
 
 const makeCharacters = (): Character[] =>
@@ -72,7 +72,8 @@ export const useStore = create<Store>((set, get) => ({
     set({ transport: 'stopped', playStartTime: null })
   },
 
-  assignLoop(charId, loopId) {
+  async assignLoop(charId, loopId) {
+    await engine.loadBuffer(loopId)
     set(state => ({
       characters: state.characters.map(c =>
         c.id === charId ? { ...c, loopId } : c,
@@ -146,8 +147,10 @@ export const useStore = create<Store>((set, get) => ({
     return get().characters.map(c => c.loopId || '-').join(',')
   },
 
-  applyShareState(encoded: string) {
+  async applyShareState(encoded: string) {
     const parts = encoded.split(',')
+    const loopIds = parts.filter(id => id !== '-' && LOOP_MAP.has(id))
+    await engine.loadBuffers(loopIds)
     parts.forEach((loopId, i) => {
       if (loopId !== '-' && LOOP_MAP.has(loopId)) {
         get().assignLoop(i, loopId)

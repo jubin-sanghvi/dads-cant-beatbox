@@ -68,7 +68,7 @@ export default function DadAvatar({ index, active, category }: DadAvatarProps) {
   )
 
   const stateClass = category === null ? 'dad-empty' : 'dad-assigned'
-  const className = `dad-avatar ${stateClass}${active ? ' dad-active' : ''}`
+  const className = `dad-avatar ${stateClass}${active ? ` dad-active dad-active-${index}` : ''}`
 
   return (
     <div

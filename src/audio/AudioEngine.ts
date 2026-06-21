@@ -4,7 +4,7 @@ import {
   LOOP_DURATION,
   SAMPLE_RATE,
 } from '../config/constants'
-import { LOOPS, LOOP_MAP } from '../config/loops'
+import { LOOP_MAP } from '../config/loops'
 import { audioBufferToWav } from './exportWav'
 import type { Character } from '../store/useStore'
 
@@ -22,6 +22,7 @@ import type { Character } from '../store/useStore'
 export class AudioEngine {
   private ctx: AudioContext | null = null
   private buffers = new Map<string, AudioBuffer>()
+  private loadingBuffers = new Map<string, Promise<void>>()
 
   // per-character chain nodes
   private charGains: GainNode[] = []
@@ -64,7 +65,6 @@ export class AudioEngine {
       this.charPanners.push(p)
     }
 
-    await this.loadAllBuffers(ctx)
   }
 
   private buildMasterBus(ctx: BaseAudioContext) {
@@ -114,14 +114,26 @@ export class AudioEngine {
     this.reverbReturn.connect(this.compressor)
   }
 
-  private async loadAllBuffers(ctx: BaseAudioContext) {
-    this.buffers.clear()
-    for (const loop of LOOPS) {
+  async loadBuffer(loopId: string): Promise<void> {
+    if (this.buffers.has(loopId)) return
+    const pending = this.loadingBuffers.get(loopId)
+    if (pending) return pending
+    const ctx = this.ensureCtx()
+    const loop = LOOP_MAP.get(loopId)
+    if (!loop) return
+    const promise = (async () => {
       const res = await fetch(loop.filePath)
       const arr = await res.arrayBuffer()
       const decoded = await ctx.decodeAudioData(arr)
-      this.buffers.set(loop.id, decoded)
-    }
+      this.buffers.set(loopId, decoded)
+      this.loadingBuffers.delete(loopId)
+    })()
+    this.loadingBuffers.set(loopId, promise)
+    return promise
+  }
+
+  async loadBuffers(loopIds: string[]): Promise<void> {
+    await Promise.all(loopIds.map(id => this.loadBuffer(id)))
   }
 
   private ensureCtx() {

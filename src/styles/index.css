@@ -7,8 +7,9 @@
 }
 
 :root {
-  /* Light theme surfaces — warm cream base */
+  /* Light theme surfaces  - warm cream base */
   --bg: #faf8f5;
+  --bg-rgb: 250, 248, 245;
   --bg-grad: linear-gradient(180deg, #fdfcfa 0%, #f5f2ed 100%);
   --surface: #fffefa;
   --text: #1a1a2a;
@@ -18,7 +19,7 @@
   --shadow-soft: 0 10px 40px rgba(26, 26, 42, 0.08);
   --shadow-card: 0 4px 18px rgba(26, 26, 42, 0.06);
 
-  /* Category accents — soft pastel palette */
+  /* Category accents  - soft pastel palette */
   --beat: #e07070;
   --bass: #6ba3b5;
   --perc: #e08a6a;
@@ -42,6 +43,7 @@
 
 [data-theme="dark"] {
   --bg: #121218;
+  --bg-rgb: 18, 18, 24;
   --bg-grad: linear-gradient(180deg, #1a1a28 0%, #151520 100%);
   --surface: #1c1c2a;
   --text: #ebe8f0;
@@ -116,6 +118,18 @@ body {
   overflow: visible;
 }
 
+.site-footer {
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  color: var(--beat);
+  padding: 12px 16px 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(var(--bg-rgb), 0.6);
+  border-top: 1px solid var(--border);
+}
+
 /* Play / stop button */
 .play-btn {
   width: 72px;
@@ -171,6 +185,23 @@ body {
 .header-action:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+.copied-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--beat);
+  white-space: nowrap;
+  animation: copiedFadeIn 0.2s ease-out;
+}
+@keyframes copiedFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to { opacity: 1; transform: translateX(-50%); }
 }
 
 /* Theme toggle */
@@ -368,14 +399,62 @@ body {
 
 /* ─── Character Animations ─── */
 .dad-active {
-  animation: dadBounce 0.6s ease-in-out infinite;
+  animation: dadBounce 0.65s ease-in-out infinite;
 }
 
+/* Dad 0  - Big Bounce */
+.dad-active-0 { animation: dadBounce 0.65s ease-in-out infinite; }
 @keyframes dadBounce {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-5px) rotate(-1.5deg); }
-  50% { transform: translateY(-7px) rotate(0deg); }
-  75% { transform: translateY(-5px) rotate(1.5deg); }
+  25% { transform: translateY(-7px) rotate(-1deg); }
+  50% { transform: translateY(-10px) rotate(0deg); }
+  75% { transform: translateY(-7px) rotate(1deg); }
+}
+
+/* Dad 1  - Side Sway */
+.dad-active-1 { animation: dadSway 1.3s ease-in-out infinite; }
+@keyframes dadSway {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-4px) rotate(-2.5deg); }
+  75% { transform: translateX(4px) rotate(2.5deg); }
+}
+
+/* Dad 2  - Head Nod */
+.dad-active-2 { animation: dadNod 0.65s ease-in-out infinite; }
+@keyframes dadNod {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-3px) scaleY(0.97); }
+}
+
+/* Dad 3  - Wiggle */
+.dad-active-3 { animation: dadWiggle 0.65s ease-in-out infinite; }
+@keyframes dadWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+/* Dad 4  - Lean Back */
+.dad-active-4 { animation: dadLean 1.3s ease-in-out infinite; }
+@keyframes dadLean {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-2deg) scale(1.03); }
+}
+
+/* Dad 5  - Hop */
+.dad-active-5 { animation: dadHop 0.65s cubic-bezier(0.2, 0, 0.3, 1) infinite; }
+@keyframes dadHop {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-9px); }
+}
+
+/* Dad 6  - Groove */
+.dad-active-6 { animation: dadGroove 1.3s ease-in-out infinite; }
+@keyframes dadGroove {
+  0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+  25% { transform: translateY(-5px) translateX(-2px) rotate(-2deg); }
+  50% { transform: translateY(-3px) translateX(0) rotate(0deg); }
+  75% { transform: translateY(-5px) translateX(2px) rotate(2deg); }
 }
 
 @keyframes badgeSlideIn {
@@ -537,6 +616,13 @@ body {
   transform: scale(0.94);
 }
 
+.palette-chip-used {
+  filter: grayscale(0.85) brightness(0.7);
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
 .palette-chip-name {
   display: block;
   font-size: 0.5rem;
@@ -604,4 +690,112 @@ body {
 .credit-line a:hover {
   color: #aaa;
   text-decoration: underline;
+}
+
+/* ─── Mobile ─── */
+@media (max-width: 600px) {
+  .app {
+    padding: 12px 10px 20px;
+    gap: 14px;
+  }
+
+  .header-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .header-center {
+    order: -1;
+    flex: 0 0 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .header-right {
+    gap: 8px;
+  }
+
+  .play-btn {
+    width: 60px;
+    height: 60px;
+  }
+
+  .stage {
+    padding: 20px 12px 16px;
+    border-radius: 18px;
+  }
+
+  .stage-inner {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .char-slot {
+    flex: 1 1 calc(25% - 8px);
+    max-width: calc(25% - 8px);
+  }
+
+  .char-loop-badge {
+    font-size: 0.55rem;
+    padding: 3px 5px 3px 6px;
+  }
+
+  .char-loop-name {
+    display: none;
+  }
+
+  .stage::before {
+    width: 300px;
+    height: 120px;
+  }
+
+  .stage.stage-playing::before {
+    width: 350px;
+    height: 140px;
+  }
+
+  .sound-palette {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 16px;
+    overflow-x: visible;
+    justify-content: center;
+  }
+
+  .palette-chip {
+    width: 44px;
+    padding: 8px 3px 5px;
+  }
+
+  .palette-chip-name {
+    font-size: 0.55rem;
+  }
+
+  .stage-hint {
+    font-size: 0.75rem;
+  }
+
+  .wordmark {
+    font-size: 0.65rem;
+  }
+}
+
+/* Touch devices: always show controls (no hover) */
+@media (hover: none) {
+  .char-controls {
+    opacity: 1;
+  }
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

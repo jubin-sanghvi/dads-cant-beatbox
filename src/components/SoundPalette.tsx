@@ -1,20 +1,24 @@
+import { useMemo } from 'react'
 import { useDraggable } from '@dnd-kit/core'
 import { LOOPS, type GlyphId } from '../config/loops'
 import { CATEGORY_COLORS, CATEGORY_LABELS, type LoopCategory } from '../config/constants'
 import SoundProp from './SoundProp'
+import { useStore } from '../store/useStore'
 
 function PaletteTile({
   id,
   category,
   displayName,
   glyph,
+  isUsed,
 }: {
   id: string
   category: LoopCategory
   displayName: string
   glyph: GlyphId
+  isUsed: boolean
 }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id })
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id, disabled: isUsed })
   const color = CATEGORY_COLORS[category]
 
   return (
@@ -22,10 +26,10 @@ function PaletteTile({
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className="palette-chip"
+      className={`palette-chip${isUsed ? ' palette-chip-used' : ''}`}
       style={{
         background: color,
-        opacity: isDragging ? 0.35 : 1,
+        opacity: isUsed ? 0.4 : isDragging ? 0.35 : 1,
       }}
       title={`${CATEGORY_LABELS[category]}: ${displayName}`}
     >
@@ -39,6 +43,12 @@ const topCategories: LoopCategory[] = ['Drums', 'Bass', 'HiHat', 'Guitar', 'Perc
 const bottomCategories: LoopCategory[] = ['Vocals', 'FX', 'Synth', 'Pads', 'Risers']
 
 export default function SoundPalette({ position }: { position?: 'top' | 'bottom' }) {
+  const characters = useStore(s => s.characters)
+  const usedLoopIds = useMemo(
+    () => new Set(characters.map(c => c.loopId).filter(Boolean)),
+    [characters]
+  )
+
   const categories = position === 'top' ? topCategories
     : position === 'bottom' ? bottomCategories
     : [...topCategories, ...bottomCategories]
@@ -62,6 +72,7 @@ export default function SoundPalette({ position }: { position?: 'top' | 'bottom'
                   category={l.category}
                   displayName={l.displayName}
                   glyph={l.glyph}
+                  isUsed={usedLoopIds.has(l.id)}
                 />
               ))}
             </div>

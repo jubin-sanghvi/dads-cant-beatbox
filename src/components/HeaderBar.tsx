@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import { LOOPS } from '../config/loops'
+import { engine } from '../audio/AudioEngine'
 import Logo from './Logo'
 import Icon from './Icon'
 import ThemeToggle from './ThemeToggle'
@@ -20,9 +21,14 @@ export default function HeaderBar() {
   const handleShuffle = async () => {
     await initAudio()
     const loopIds = LOOPS.map(l => l.id)
-    for (let i = 0; i < characters.length; i++) {
-      const randomLoop = loopIds[Math.floor(Math.random() * loopIds.length)]
-      assignLoop(i, randomLoop)
+    for (let i = loopIds.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[loopIds[i], loopIds[j]] = [loopIds[j], loopIds[i]]
+    }
+    const picks = loopIds.slice(0, characters.length)
+    await engine.loadBuffers(picks)
+    for (let i = 0; i < picks.length; i++) {
+      assignLoop(i, picks[i])
     }
   }
 
@@ -75,9 +81,12 @@ export default function HeaderBar() {
         <button className="header-action" onClick={downloadMix} title="Download 30s Mix" disabled={!hasLoops || downloading}>
           <Icon name={downloading ? 'stop' : 'download'} size={18} />
         </button>
-        <button className="header-action" onClick={handleShare} title={shared ? 'Copied!' : 'Share'} disabled={!hasLoops}>
-          <Icon name="share" size={18} />
-        </button>
+        <div style={{ position: 'relative' }}>
+          <button className="header-action" onClick={handleShare} title={shared ? 'Copied!' : 'Share'} disabled={!hasLoops}>
+            <Icon name="share" size={18} />
+          </button>
+          {shared && <span className="copied-label">Copied!</span>}
+        </div>
         <ThemeToggle />
         <a href="#/lab" className="header-action" title="Lab" style={{ textDecoration: 'none' }}>
           <Icon name="lab" size={18} />

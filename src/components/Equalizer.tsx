@@ -62,6 +62,9 @@ export default function Equalizer() {
   }, [eqStyle])
 
   useEffect(() => {
+    // ponytail: skip entire viz when user prefers reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
@@ -69,6 +72,7 @@ export default function Equalizer() {
 
     // ctx is guaranteed non-null from here on; alias for nested functions
     const c = ctx
+    const isMobile = window.matchMedia('(hover: none)').matches
 
     let raf = 0
     let freqData: Uint8Array<ArrayBuffer> | null = null
@@ -112,12 +116,15 @@ export default function Equalizer() {
         const x = i * (barWidth + GAP)
         const y = h - barH
 
-        c.globalAlpha = 0.15
-        c.fillStyle = grad
-        c.save()
-        c.filter = 'blur(8px)'
-        roundBar(x - 3, y - 3, barWidth + 6, barH + 6, barWidth / 2 + 3)
-        c.restore()
+        // ponytail: blur is expensive on mobile GPUs, skip glow halo
+        if (!isMobile) {
+          c.globalAlpha = 0.15
+          c.fillStyle = grad
+          c.save()
+          c.filter = 'blur(8px)'
+          roundBar(x - 3, y - 3, barWidth + 6, barH + 6, barWidth / 2 + 3)
+          c.restore()
+        }
 
         c.filter = 'none'
         c.globalAlpha = 0.45
